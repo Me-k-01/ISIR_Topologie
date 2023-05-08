@@ -94,13 +94,13 @@ public class Point {
   //chacune de ces variable permet de définir le brin auquel il peut etre rattaché
   //cf schema
   // cette reprensation des point permet  realiser facilement les coutures entre brin adajacents
-  
+  /*
   public Face upLeft = null; //0
   public Face downLeft1 = null; //1
   public Face downLeft2 = null; //2
   public Face downRight = null; //3
   public Face upRight1 = null; //4
-  public Face upRight2 = null; //5
+  public Face upRight2 = null; //5*/
   
   // Nouvelle représentation  
   public Face[] faces = new Face[6]; // [upLeft, downLeft1, downLeft2, downRight, upRight1, upRight2]
@@ -114,6 +114,7 @@ public class Point {
       faces[i] = null;
     }
   }
+  /*
   public void setFaces() {
     faces = new Face[]{upLeft, downLeft1, downLeft2, downRight, upRight1, upRight2};
   }
@@ -124,14 +125,14 @@ public class Point {
     downRight = faces[3];
     upRight1 = faces[4];
     upRight2 = faces[5];
-  }
+  }*/
 
-  public Face get(Relation r) {
+  public Face getFace(Relation r) {
     return faces[r.ordinal()];
   }
 
-  public void connect(int alpha, Relation a, Relation b) {
-     faces[a.ordinal()].b2.connect(alpha, faces[b.ordinal()].b1);
+  public void connect(int alpha, Relation a, Relation b) { // Connection de b1 vers b2
+     faces[a.ordinal()].b1.connect(alpha, faces[b.ordinal()].b2);
   }
 
   public void add(Relation r) { 
@@ -397,8 +398,7 @@ public class Map2g {
 
           p.upLeft.b1.connect(2,p.upRight2.b2);
           p.upLeft.b2.connect(2,p.downLeft1.b1);*/
-        }
-      p.setVar();
+        } 
       return p;
   }
   
@@ -409,101 +409,65 @@ public class Map2g {
       for (int x = 0; x <column; x++){ 
 
         Point p = mapPoint[x][y];
-        if(x==0 && y==0){    
-        }
-        else if(x<(column-1) && y==0){// les points le long du bord supérieur
-          //mapPoint[x-1][y].connect(0, Relation.upLeft, Relation.upRight1);
-          mapPoint[x-1][y].upLeft.b2.connect(0,p.upRight1.b1);
-        }
-        else if(x==(column-1) && y==0){//le coins supérieur droit
-          print(x,"-",y);
-          mapPoint[x-1][y].upLeft.b2.connect(0,p.upRight1.b1);
-          //mapPoint[x-1][y].connect(0, Relation.upLeft, Relation.upRight1);
-        }
+        if(x==0 && y==0) {} 
+        // Les points le long du bord supérieur
+        else if(x<=(column-1) && y==0){  
+          mapPoint[x-1][y].getFace(Relation.upLeft).b2.connect(0,p.getFace(Relation.upRight1).b1);
+          //mapPoint[x-1][y].upLeft.b2.connect(0,p.upRight1.b1);
+        }  
         // Les points le long du bord gauche
         else if (x==0 && y<(row-1) ){ 
-        
-          /*mapPoint[x][y-1].connect(0, Relation.upLeft, Relation.downLeft2);
-          mapPoint[x+1][y-1].connect(0, Relation.upRight1, Relation.downLeft2);
-          mapPoint[x+1][y-1].connect(0, Relation.upRight2, Relation.downLeft1);*/
-          mapPoint[x][y-1].upLeft.b1.connect(0,p.downLeft2.b2);
-          mapPoint[x+1][y-1].upRight1.b2.connect(0,p.downLeft2.b1);
-          mapPoint[x+1][y-1].upRight2.b1.connect(0,p.downLeft1.b2);
+          mapPoint[x][y-1].getFace(Relation.upLeft).b1.connect(0, p.getFace(Relation.downLeft2).b2);
+          mapPoint[x+1][y-1].getFace(Relation.upRight1).b2.connect(0, p.getFace(Relation.downLeft2).b1);
+          mapPoint[x+1][y-1].getFace(Relation.upRight2).b1.connect(0,p.getFace(Relation.downLeft1).b2);
         }
         // Les points le long du bord droit
-        else if (x==(column-1) &&y<(row-1)) {  
-          /*mapPoint[x-1][y].connect(0, Relation.downLeft1, Relation.downRight);
-          mapPoint[x-1][y].connect(0, Relation.upLeft, Relation.upRight1);
-          mapPoint[x][y-1].connect(0, Relation.upRight2, Relation.downRight);*/
-          
-          mapPoint[x-1][y].downLeft1.b1.connect(0,p.downRight.b2);
-          mapPoint[x-1][y].upLeft.b2.connect(0,p.upRight1.b1);
-          mapPoint[x][y-1].upRight2.b2.connect(0,p.downRight.b1);
+        else if (x==(column-1) &&y<(row-1)) {   
+          mapPoint[x-1][y].getFace(Relation.downLeft1).b1.connect(0, p.getFace(Relation.downRight).b2);
+          mapPoint[x-1][y].getFace(Relation.upLeft).b2.connect(0, p.getFace(Relation.upRight1).b1);
+          mapPoint[ x ][y-1].getFace(Relation.upRight2).b2.connect(0, p.getFace(Relation.downRight).b1);
           
         }
         // Le coin inferieur gauche
-        else if (x==0 &&y==(row-1)) { 
-          /*mapPoint[x][y-1].connect(0, Relation.upLeft, Relation.downLeft2);
-          mapPoint[x+1][y-1].connect(0, Relation.upRight1, Relation.downLeft2);
-          mapPoint[x+1][y-1].connect(0, Relation.upRight2, Relation.downLeft1);*/
+        else if (x==0 &&y==(row-1)) {  
           
-          mapPoint[x][y-1].upLeft.b1.connect(0,p.downLeft2.b2);
-          mapPoint[x+1][y-1].upRight1.b2.connect(0,p.downLeft2.b1);
-          mapPoint[x+1][y-1].upRight2.b1.connect(0,p.downLeft1.b2);
+          mapPoint[x][y-1].getFace(Relation.upLeft).b1.connect(0,p.getFace(Relation.downLeft2).b2);
+          mapPoint[x+1][y-1].getFace(Relation.upRight1).b2.connect(0,p.getFace(Relation.downLeft2).b1);
+          mapPoint[x+1][y-1].getFace(Relation.upRight2).b1.connect(0,p.getFace(Relation.downLeft1).b2);
 
         }
         // Le point le long du bord inférieur
-        else if(x<(column-1) && y==(row-1)){ 
-          /*
-          mapPoint[x][y-1].connect(0, Relation.upLeft, Relation.downLeft2);
-          mapPoint[x][y-1].connect(0, Relation.upRight2, Relation.downRight);
- 
-          mapPoint[x-1][y].connect(0, Relation.downLeft1, Relation.downRight);
+        else if(x<(column-1) && y==(row-1)){   
           
-          mapPoint[x+1][y-1].connect(0, Relation.upRight1, Relation.downLeft2);
-          mapPoint[x+1][y-1].connect(0, Relation.upRight2, Relation.downLeft1);*/
-          mapPoint[x][y-1].upLeft.b1.connect(0,p.downLeft2.b2);
-          mapPoint[x][y-1].upRight2.b2.connect(0,p.downRight.b1);
+          mapPoint[x][y-1].getFace(Relation.upLeft).b1.connect(0, p.getFace(Relation.downLeft2).b2);
+          mapPoint[x][y-1].getFace(Relation.upRight2).b2.connect(0, p.getFace(Relation.downRight).b1);
  
-          mapPoint[x-1][y].downLeft1.b1.connect(0,p.downRight.b2);
+          mapPoint[x-1][y].getFace(Relation.downLeft1).b1.connect(0,p.getFace(Relation.downRight).b2);
           
-          mapPoint[x+1][y-1].upRight1.b2.connect(0,p.downLeft2.b1);
-          mapPoint[x+1][y-1].upRight2.b1.connect(0,p.downLeft1.b2);
+          mapPoint[x+1][y-1].getFace(Relation.upRight1).b2.connect(0,p.getFace(Relation.downLeft2).b1);
+          mapPoint[x+1][y-1].getFace(Relation.upRight2).b1.connect(0,p.getFace(Relation.downLeft1).b2);
           
         }
         else if(x==(column-1) &&y==(row-1)){//le coins inferieur droit
-        /*
-          mapPoint[x-1][y].connect(0, Relation.downLeft1, Relation.downRight);
-          mapPoint[x][y-1].connect(0, Relation.upRight2, Relation.downRight);
-          */
-          mapPoint[x-1][y].downLeft1.b1.connect(0,p.downRight.b2);
-          mapPoint[x][y-1].upRight2.b2.connect(0,p.downRight.b1);
+         
+          
+          mapPoint[x-1][y].getFace(Relation.downLeft1).b1.connect(0,p.getFace(Relation.downRight).b2);
+          mapPoint[x][y-1].getFace(Relation.upRight2).b2.connect(0,p.getFace(Relation.downRight).b1);
           
         }
         else{//cas général
-          /*
-          mapPoint[x-1][y].connect(0, Relation.downLeft1, Relation.downRight);
-          mapPoint[x-1][y].connect(0, Relation.upLeft, Relation.upRight1);
+          mapPoint[x-1][y].getFace(Relation.downLeft1).b1.connect(0, p.getFace(Relation.downRight).b2);
+          mapPoint[x-1][y].getFace(Relation.upLeft).b2.connect(0,p.getFace(Relation.upRight1).b1);
 
-          mapPoint[x][y-1].connect(0, Relation.upRight2, Relation.downRight);
-          mapPoint[x][y-1].connect(0, Relation.upLeft, Relation.downLeft2);
+          mapPoint[x][y-1].getFace(Relation.upRight2).b2.connect(0, p.getFace(Relation.downRight).b1);
+          mapPoint[x][y-1].getFace(Relation.upLeft).b1.connect(0, p.getFace(Relation.downLeft2).b2);
           
-          mapPoint[x+1][y-1].connect(0, Relation.upRight1, Relation.downLeft2);
-          mapPoint[x+1][y-1].connect(0, Relation.upRight2, Relation.downLeft1);
-          */
-          mapPoint[x-1][y].downLeft1.b1.connect(0,p.downRight.b2);
-          mapPoint[x-1][y].upLeft.b2.connect(0,p.upRight1.b1);
-
-          mapPoint[x][y-1].upRight2.b2.connect(0,p.downRight.b1);
-          mapPoint[x][y-1].upLeft.b1.connect(0,p.downLeft2.b2);
-          
-          mapPoint[x+1][y-1].upRight1.b2.connect(0,p.downLeft2.b1);
-          mapPoint[x+1][y-1].upRight2.b1.connect(0,p.downLeft1.b2);
+          mapPoint[x+1][y-1].getFace(Relation.upRight1).b2.connect(0, p.getFace(Relation.downLeft2).b1);
+          mapPoint[x+1][y-1].getFace(Relation.upRight2).b1.connect(0, p.getFace(Relation.downLeft1).b2);
           
         }
         mapPoint[x][y] = p;
       }
-      
     }
     
   }
