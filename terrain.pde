@@ -117,6 +117,14 @@ public class Point {
   public void setFaces() {
     faces = new Face[]{upLeft, downLeft1, downLeft2, downRight, upRight1, upRight2};
   }
+  public void setVar() {
+    upLeft = faces[0];
+    downLeft1 = faces[1];
+    downLeft2 = faces[2];
+    downRight = faces[3];
+    upRight1 = faces[4];
+    upRight2 = faces[5];
+  }
 
   public Face get(Relation r) {
     return faces[r.ordinal()];
@@ -281,12 +289,14 @@ public class Map2g {
         
         // Les coins superieur gauche
         if(x==0 && y==0){   
-          p.upLeft = new Face(new Brin(p.point), new Brin(p.point)); 
-          //p.add(Relation.upLeft);
+          p.add(Relation.upLeft);
+          /*
+          p.upLeft = new Face(new Brin(p.point), new Brin(p.point));  */
         } 
         // Les points le long du bord supérieur
         else if(x<(column-1) && y==0){ 
-          //p.add(Relation.upLeft, Relation.upRight2, Relation.upRight1);
+          p.add(Relation.upLeft, Relation.upRight2, Relation.upRight1);
+          /*
           p.upLeft = new Face(new Brin(p.point), new Brin(p.point));
           p.upRight1=new Face(new Brin(p.point), new Brin(p.point));
           p.upRight2=new Face(new Brin(p.point), new Brin(p.point));
@@ -294,20 +304,23 @@ public class Map2g {
           //couture sur les faces
           p.upRight2.b1.connect(2, p.upRight1.b2);
           p.upLeft.b1.connect(2, p.upRight2.b2);
+          */
         } 
         // Le coins supérieur droit
         else if(x==(column-1) && y==0){ 
-          //p.add(Relation.upRight1, Relation.upRight2);
+          p.add(Relation.upRight1, Relation.upRight2);
+          /*
           p.upRight1=new Face(new Brin(p.point), new Brin(p.point));
           p.upRight2=new Face(new Brin(p.point), new Brin(p.point));
 
           //couture sur les faces
           p.upRight2.b1.connect(2,p.upRight1.b2);
+          */
         } 
         // Les points le long du bord gauche
         else if (x==0 && y<(row-1) ){ 
-          //p.add(Relation.upLeft, Relation.downLeft1, Relation.downLeft2);
-          
+          p.add(Relation.upLeft, Relation.downLeft1, Relation.downLeft2);
+          /*
           p.upLeft=new Face(new Brin(p.point), new Brin(p.point));
           p.downLeft1=new Face(new Brin(p.point), new Brin(p.point));
           p.downLeft2=new Face(new Brin(p.point), new Brin(p.point));
@@ -315,12 +328,12 @@ public class Map2g {
           //couture sur les faces
           p.downLeft1.b2.connect(2,p.downLeft2.b1);
           p.downLeft1.b1.connect(2,p.upLeft.b2);
-          
+          */
         }
         // Les points le long du bord droit
         else if (x==(column-1) && y<(row-1)) { 
-          //p.add(Relation.downRight, Relation.upRight1, Relation.upRight2);
-         
+          p.add(Relation.downRight, Relation.upRight1, Relation.upRight2);
+          /*
           p.downRight=new Face(new Brin(p.point), new Brin(p.point));
           p.upRight1=new Face(new Brin(p.point), new Brin(p.point));
           p.upRight2=new Face(new Brin(p.point), new Brin(p.point));
@@ -328,24 +341,24 @@ public class Map2g {
           //coutures
           p.downRight.b2.connect(2,p.upRight1.b1);
           p.upRight1.b2.connect(2,p.upRight2.b1);
-          
+          */
         }
          // Le coin inferieur gauche
         else if (x==0 && y==(row-1)) { 
-          //p.add(Relation.downLeft1, Relation.downLeft2);
-          
+          p.add(Relation.downLeft1, Relation.downLeft2);
+          /*
           p.downLeft1=new Face(new Brin(p.point), new Brin(p.point));
 
           p.downLeft2=new Face(new Brin(p.point), new Brin(p.point));
 
           //coutures
           p.downLeft1.b2.connect(2,p.downLeft2.b1);
-          
+          */
         }
         // Le point le long du bord inférieur
         else if(x<(column-1) && y==(row-1)){  
-          //p.add(Relation.downLeft1, Relation.downLeft2, Relation.downRight);
-          
+          p.add(Relation.downLeft1, Relation.downLeft2, Relation.downRight);
+          /*
           p.downLeft1 = new Face(new Brin(p.point), new Brin(p.point));
           p.downLeft2 = new Face(new Brin(p.point), new Brin(p.point));
           p.downRight = new Face(new Brin(p.point), new Brin(p.point));
@@ -353,21 +366,21 @@ public class Map2g {
           //COUTURES
           p.downRight.b1.connect(2, p.downLeft2.b2);
           p.downLeft1.b2.connect(2, p.downLeft2.b1);
-          
+          */
         }
         // Le coins inferieur droit
         else if(x==(column-1) && y==(row-1)){
-          //p.add(Relation.downRight);
-          
-          p.downRight= new Face(new Brin(p.point), new Brin(p.point));
+          p.add(Relation.downRight);
+          /*
+          p.downRight= new Face(new Brin(p.point), new Brin(p.point));*/
         }
          // Le cas général (dans le milieu )
         else{
-          //p.add(Relation.downRight, Relation.downLeft2, Relation.downLeft1);
-          //p.add(Relation.downRight, Relation.upRight1, Relation.upRight2);
-          //p.add(Relation.upRight2, Relation.upLeft, Relation.downLeft1);
+          p.add(Relation.downRight, Relation.downLeft2, Relation.downLeft1);
+          p.add(Relation.downRight, Relation.upRight1, Relation.upRight2);
+          p.add(Relation.upRight2, Relation.upLeft, Relation.downLeft1);
   
-        
+        /*
           p.upLeft   =new Face(new Brin(p.point), new Brin(p.point));
           p.downLeft1 =new Face(new Brin(p.point), new Brin(p.point));
           p.downLeft2 =new Face(new Brin(p.point), new Brin(p.point));
@@ -383,9 +396,9 @@ public class Map2g {
           p.upRight1.b2.connect(2,p.upRight2.b1);
 
           p.upLeft.b1.connect(2,p.upRight2.b2);
-          p.upLeft.b2.connect(2,p.downLeft1.b1);
+          p.upLeft.b2.connect(2,p.downLeft1.b1);*/
         }
-      p.setFaces();
+      p.setVar();
       return p;
   }
   
