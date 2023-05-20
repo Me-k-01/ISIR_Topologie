@@ -22,12 +22,12 @@ class Brin {
     point = p;
   }
   
-  // Cette methode permet de mettre alpha un brin avec un autre
+  // Cette methode permet de mettre en relation alpha un brin avec un autre
   public void connect(int alph, Brin b){
     this.alpha[alph] = b;
     b.alpha[alph]    = this;
   }
-  // Cette methode sers à afficher un brin par le segment crée par lui meme et le brin avec le lequel il partage une relation alpha 0
+  // Cette methode sert à afficher un brin par le segment crée par lui meme et le brin avec le lequel il partage une relation alpha 0
   public void renderLines(){
     beginShape(LINES);
     vertex(point.x, point.y, point.z);
@@ -35,11 +35,12 @@ class Brin {
     endShape();
   }
   
-   public void render(){
+  //Affiche un triangle plein partir d'un brin et ses relations
+  public void render(){
     beginShape(TRIANGLE);
     vertex(point.x, point.y, point.z);
-    vertex(alpha[0].point.x, alpha[0].point.y, alpha[0].point.z);
-    vertex(alpha[1].alpha[0].point.x, alpha[1].alpha[0].point.y, alpha[1].alpha[0].point.z);
+    vertex(alpha[0].point.x, alpha[0].point.y, alpha[0].point.z); 
+    vertex(alpha[1].alpha[0].point.x, alpha[1].alpha[0].point.y, alpha[1].alpha[0].point.z); 
     endShape();
   }
 
@@ -68,13 +69,13 @@ public class Face{
     b2.render();
   }
 
-  // Calcul de  la normal de la face
+  // Calcul de  la normale de la face
   public PVector normals(){
     
     PVector p = b1.point; // on recupere le point partagé par b1 et b2
 
-    PVector b1vec = PVector.sub(b1.alpha[0].point, p); //on prend le segement auquel appartient b1
-    PVector b2vec = PVector.sub(b2.alpha[0].point, p); //on prend le segement auquel appartient b2
+    PVector b1vec = PVector.sub(b1.alpha[0].point, p); //on prend le segment auquel appartient b1
+    PVector b2vec = PVector.sub(b2.alpha[0].point, p); //on prend le segment auquel appartient b2
 
     PVector result = new PVector();
     PVector.cross(b1vec, b2vec, result); // puis on realise un produit vectoriel pour obtenir la normal de la Face
@@ -99,8 +100,7 @@ enum Relation {
 public class Point {  
   // Il y'a un maximum de 6 faces rattacher à ce point
   // chacune de ces variable permet de définir le brin auquel il peut etre rattaché
-  // cf schema
-  // Cette reprensation des point permet  realiser facilement les coutures entre brin adajacents (on deduit le troisième segment a partir des deux brins contenu dans la classe Face)
+  // Cette representation des point permet  realiser facilement les coutures entre brin adajacents (on deduit le troisième segment a partir des deux brins contenu dans la classe Face)
   public Face[] faces = new Face[6]; // [upLeft, downLeft1, downLeft2, downRight, upRight1, upRight2]
   
   public PVector point;
@@ -144,7 +144,7 @@ public class Point {
     faces[b.ordinal()].b1.connect(2, faces[middle.ordinal()].b2);
   } 
    
-  // Fonction qui permet de modifier la hauteur du point pour des déformations du terrain.
+  // Fonction qui permet deplonger le brin pour des déformations du terrain.
   public void setZ(float z){  
     point.z = z;
 
@@ -174,7 +174,7 @@ public class Point {
   // L'affichage des normales
   public void drawNormals(){
 
-    PVector norm = new PVector(0,0,0); // On va d'abors effectuer une moyenne sur les normales des faces
+    PVector norm = new PVector(0,0,0); // On va d'abord effectuer une moyenne sur les normales des faces
     int n = 0;
     
     for (var f : faces) {
@@ -202,7 +202,7 @@ public class Point {
 // La classe permettant de represnter une 2g map
 public class Map2g {
 
-  // Nombre de collonnes et de ligne de la 2g map
+  // Nombre de colonnes et de ligne de la 2g map
   public int column;
   public int row;
   public float scaling=scale;
@@ -411,7 +411,7 @@ public class Map2g {
     }
     
     mapPoint = newMapPoint;
-    // On lie tous les poit entre eux par des segments
+    // On lie tous les point entre eux par des segments (alpha 0 )
     this.linkAlpha0();
   }
   
@@ -426,6 +426,9 @@ public class Map2g {
 };
 
 Map2g map;
+
+
+
 void setup() { 
   size(600, 600, P3D);
   w = 600;
