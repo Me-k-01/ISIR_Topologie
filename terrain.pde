@@ -13,7 +13,7 @@ float flying = 0;
 //######################
 
 class Brin {
-// La classe Brin represente un brin par un point et ses relations alpha avec d'autres Brins
+// La classe Brin represente un brin par un sommet et ses relations alpha avec d'autres Brins
 
   public PVector point;
   public Brin[] alpha = new Brin[3];
@@ -86,7 +86,7 @@ public class Face{
 }
 
 //######################
-// La classe Point represente un point de l'espace
+// La classe Point represente un point du triangle strip (c'est un point dans l'espace)
 // Ce point appartient à un certain nombre de faces
 enum Relation {
   upLeft,    // 0
@@ -98,8 +98,11 @@ enum Relation {
 }
 
 public class Point {  
-  // Il y'a un maximum de 6 faces rattacher à ce point
-  // chacune de ces variable permet de définir le brin auquel il peut etre rattaché
+  // Il y'a un maximum de 6 faces rattacher à ce point ( dans le cas d'un triangle strip)
+  // en effet a un point de l'espace j'usqu'a six triangle peuvent partager un point commmun
+  // Le but de cette classe est de rassembler les brins partageant ce point pour facilement les mettres en relation 
+
+  // chacune de ces variable permet de définir les brins auquels il peut etre rattaché
   // Cette representation des point permet  realiser facilement les coutures entre brin adajacents (on deduit le troisième segment a partir des deux brins contenu dans la classe Face)
   public Face[] faces = new Face[6]; // [upLeft, downLeft1, downLeft2, downRight, upRight1, upRight2]
   
@@ -144,7 +147,7 @@ public class Point {
     faces[b.ordinal()].b1.connect(2, faces[middle.ordinal()].b2);
   } 
    
-  // Fonction qui permet deplonger le brin pour des déformations du terrain.
+  // Fonction qui permet de plonger le brin pour des déformations du terrain.
   public void setZ(float z){  
     point.z = z;
 
@@ -160,6 +163,7 @@ public class Point {
       }
     }
   } 
+  //Affichage des segments
   public void renderLines(){
     // Si il y'a une face du type, alors je l'affiche
     for (var f : faces) {
@@ -188,7 +192,7 @@ public class Point {
     //puis on "aggrandi" et on retourne la normale 
     norm.mult(-10);
     
-    //puis on l'affiche en rouge sous forme d'un petit segment
+    //puis on l'affiche vert sous forme d'un petit segment
     stroke(25, 180, 25);
     beginShape(LINES);
       vertex(point.x,point.y,point.z);
@@ -200,6 +204,7 @@ public class Point {
 
 //######################
 // La classe permettant de represnter une 2g map
+// sous forme d'une matrice de Point
 public class Map2g {
 
   // Nombre de colonnes et de ligne de la 2g map
@@ -276,7 +281,7 @@ public class Map2g {
       p.add(Relation.downRight); 
     }
     
-    // Le cas général (dans le milieu )
+    // Le cas général (dans le milieu )==> 6 faces
     else{
       p.add(Relation.downRight, Relation.downLeft2, Relation.downLeft1);
       p.add(Relation.downRight, Relation.upRight1, Relation.upRight2);
@@ -286,6 +291,8 @@ public class Map2g {
   }
   
   // La fonction permettant de relier les point par des segment(via les brins)
+  // grace a notre representation toute les relation alpha 1 et alpha 2 sont faite a la construction
+  //il ne reste donc qu'a faire les relation alpha 0
   public void linkAlpha0(){
 
     for (int y = 0; y < row; y++){ 
@@ -379,6 +386,10 @@ public class Map2g {
   }
 
   // Fonction de raffinage
+  // Notre represenetation sous forme de faces nous permet de realiser le raffinage tres facilement
+  // Nous venir intercaler des point suplementaire entre les point deja existant
+  // De ce point de depart les ralation alpha 1 et alpha 2 sont conservées
+  //il faudra juste reconecter les point par des segment (alpah 0)
   public void split(){
     this.column = column+floor(column/2);  //+50% de points
     this.row    = row+floor(row/2); //+50% de points
@@ -447,7 +458,7 @@ void draw() {
   for (int y = 0; y < map.row; y++) { 
     float xoff = 0;
     for (int x = 0; x < map.column; x++) { 
-      map.terrain[x][y] = map(noise(xoff, yoff), 0, 1, -50, 50);
+      map.terrain[x][y] = map(noise(xoff, yoff), 0, 1, -50, 50); //on genere la hauteur du terrain
       xoff += 0.2; 
     }  
     yoff += 0.2; 
